@@ -79,7 +79,7 @@ const Play = () => {
 
             await presentPaymentSheet().then(res => {
                 if (res.error) {
-                    Alert.alert("Payment Cancled", "You Payment Canceled")
+                    Alert.alert("Payment", "You Payment Canceled")
                     return;
                 } else {
                     setCredits(5);

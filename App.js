@@ -6,7 +6,7 @@ import { StripeProvider } from '@stripe/stripe-react-native';
 export default function App() {
   return (
     <StripeProvider
-      publishableKey="pk_live_51NVxWaDd81HuR6LcvbJhXdr9ROnXXDk2bpxDMxnM5UzEmUvo1qBRxnKDGDCy7K2U5U3vy65ibTYkb63Td0BXOr2600xTrqaq9H"
+      publishableKey="pk_test_51OvxmMP7aIf9ZJPYf0blIQlE3wsqJthcSUYCCRCpwRvSXNidDYpoyfBR1ZzJXd9rYxKCgNC4vMVQYsQEswO7rPJq00bmhHCLue"
       urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
       merchantIdentifier="merchant.com.{{YOUR_APP_NAME}}" // required for Apple Pay
     >
