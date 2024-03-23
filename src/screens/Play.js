@@ -61,7 +61,7 @@ const Play = () => {
 
         console.log("Scheduling notification");
 
-        await axios.post("https://2e1b-2400-adc5-116-4d00-fb2b-65d3-1aa2-8b57.ngrok-free.app/api/payment", {
+        await axios.post("https://3b57-2400-adc5-116-4d00-f601-7eeb-d004-53ed.ngrok-free.app/api/payment", {
             amount: 1
         }).then(async res => {
             const { error: sheetError } = await initPaymentSheet({
