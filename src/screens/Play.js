@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Alert, Modal } from 'react-native';
-import Payment from '../components/Payment';
-import BottomModal from '../components/Modal';
-import PaymentScreen from '../components/Payment';
-import { useStripe } from '@stripe/stripe-react-native';
+import React, { useState } from "react";
+import {
+    Text,
+    View,
+    StyleSheet,
+    TouchableOpacity,
+    Alert,
+    Modal,
+    ActivityIndicator,
+} from "react-native";
+import { useStripe } from "@stripe/stripe-react-native";
 // import { API_URL } from 'expo-dotenv';
-import axios from 'axios';
+import axios from "axios";
 
 const Play = () => {
     const [currentNumber, setCurrentNumber] = useState(1);
@@ -13,12 +18,13 @@ const Play = () => {
     const [points, setPoints] = useState(0);
     const [isRefilling, setIsRefilling] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
     const closeModal = () => {
         setModalVisible(false);
-    }
+    };
 
     const handleTap = () => {
         if (credits === 0) {
@@ -33,10 +39,10 @@ const Play = () => {
                 ]
             );
         } else {
-            setCurrentNumber(prevNumber => {
+            setCurrentNumber((prevNumber) => {
                 if (prevNumber === 10) {
                     setCredits(credits - 1);
-                    setPoints(points + 1)
+                    setPoints(points + 1);
                     Alert.alert("You have won! Credits depleted.");
                     return 1; // Reset number to 1
                 } else {
@@ -52,44 +58,38 @@ const Play = () => {
         }
     };
 
-
-    const scheduleNotification = async () => {
-
-    };
+    const scheduleNotification = async () => { };
 
     const handlePayment = async () => {
+        setIsLoading(true)
 
-        console.log("Scheduling notification");
-
-        await axios.post("https://3b57-2400-adc5-116-4d00-f601-7eeb-d004-53ed.ngrok-free.app/api/payment", {
-            amount: 1
-        }).then(async res => {
+        await axios.post("https://ddc5-2400-adc5-116-4d00-a5db-80cf-b6f1-d784.ngrok-free.app/api/initiatePayment", {
+            amount: 1,
+        }).then(async (res) => {
             const { error: sheetError } = await initPaymentSheet({
-                merchantDisplayName: 'Testing, Inc.',
+                merchantDisplayName: "Testing, Inc.",
                 paymentIntentClientSecret: res.data.response.client_secret,
                 defaultBillingDetails: {
-                    name: 'Tester',
+                    name: "Tester",
                 },
             });
 
-            if (sheetError) {
-                Alert.alert("Error", "Something went wrong!")
-                return;
-            }
+            setIsLoading(false);
 
-            await presentPaymentSheet().then(res => {
-                if (res.error) {
-                    Alert.alert("Payment", "You Payment Canceled")
-                    return;
-                } else {
+
+            await presentPaymentSheet().then((res) => {
+                if (!res.error) {
                     setCredits(5);
-                    setIsRefilling(false)
+                    setIsRefilling(false);
                 }
             });
-
-        }).catch(err => {
-            console.log(err);
-        });
+        })
+            .catch((err) => {
+                console.log(err);
+            }).finally(() => {
+                setIsLoading(false);
+                Alert.alert("Error", "Something went wrong!");
+            });
     };
 
     return (
@@ -103,13 +103,14 @@ const Play = () => {
             {isRefilling && (
                 <View style={styles.refillContainer}>
                     <TouchableOpacity onPress={handlePayment} style={styles.refillButton}>
-                        <Text style={styles.refillButtonText}>Refill Credits</Text>
+                        {
+                            !isLoading ? <Text style={styles.refillButtonText}>Refill Credits</Text> :
+                                <ActivityIndicator size="small" color="#fff" />
+                        }
                     </TouchableOpacity>
                 </View>
             )}
-            {/* <TouchableOpacity onPress={handlePayment} style={styles.refillButton}>
-                <Text style={styles.refillButtonText}>Refill Credits</Text>
-            </TouchableOpacity> */}
+
 
             {/* {
                 modalVisible && <BottomModal visible={modalVisible} onClose={closeModal}>
@@ -122,13 +123,12 @@ const Play = () => {
     );
 };
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
     },
     title: {
         fontSize: 24,
@@ -137,11 +137,11 @@ const styles = StyleSheet.create({
     numberContainer: {
         padding: 20,
         borderRadius: 10,
-        backgroundColor: '#f0f0f0',
+        backgroundColor: "#f0f0f0",
     },
     number: {
         fontSize: 48,
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
     credits: {
         marginTop: 20,
@@ -149,20 +149,20 @@ const styles = StyleSheet.create({
     },
     refillContainer: {
         marginTop: 20,
-        width: '80%',
+        width: "80%",
     },
     refillButton: {
-        backgroundColor: '#007bff',
+        backgroundColor: "#007bff",
         padding: 15,
         borderRadius: 10,
-        alignItems: 'center',
+        alignItems: "center",
         marginTop: 10,
+        width: 200
     },
     refillButtonText: {
-        color: '#fff',
+        color: "#fff",
         fontSize: 18,
     },
 });
 
-
-export default Play
+export default Play;
