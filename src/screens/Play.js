@@ -5,7 +5,6 @@ import {
     StyleSheet,
     TouchableOpacity,
     Alert,
-    Modal,
     ActivityIndicator,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
@@ -17,14 +16,10 @@ const Play = () => {
     const [credits, setCredits] = useState(1);
     const [points, setPoints] = useState(0);
     const [isRefilling, setIsRefilling] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
-    const closeModal = () => {
-        setModalVisible(false);
-    };
 
     const handleTap = () => {
         if (credits === 0) {
@@ -63,7 +58,7 @@ const Play = () => {
     const handlePayment = async () => {
         setIsLoading(true)
 
-        await axios.post("https://ddc5-2400-adc5-116-4d00-a5db-80cf-b6f1-d784.ngrok-free.app/api/initiatePayment", {
+        await axios.post("https://7158-2400-adc5-116-4d00-ca61-1a93-ad32-1f8a.ngrok-free.app/api/initiatePayment", {
             amount: 1,
         }).then(async (res) => {
             const { error: sheetError } = await initPaymentSheet({
